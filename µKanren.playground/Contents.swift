@@ -81,11 +81,9 @@ struct State<Value: Equatable>: CustomStringConvertible {
     }
     
     /// ext-s
-    func extend(_ terms: [Variable: Term<Value>]) -> State {
+    func extend(_ variable: Variable, _ term: Term<Value>) -> State {
         var state = self
-        for (variable, term) in terms {
-            state.substitution[variable] = term
-        }
+        state.substitution[variable] = term
         return state
     }
     
@@ -109,9 +107,9 @@ struct State<Value: Equatable>: CustomStringConvertible {
         
         switch (a, b) {
         case let (.variable(a), _):
-            return extend([a: b])
+            return extend(a, b)
         case let (_, .variable(b)):
-            return extend([b: a])
+            return extend(b, a)
         case let (.pair(a1, a2), .pair(b1, b2)):
             return try unify(a1, b1).unify(a2, b2)
         default:
