@@ -43,7 +43,7 @@ indirect enum Term<Value: Equatable>: CustomStringConvertible, Equatable {
     }
 }
 
-extension Term: ArrayLiteralConvertible {
+extension Term: ExpressibleByArrayLiteral {
     /// Easily create a list term from an array literal.
     init(arrayLiteral elements: Term<Value>...) {
         self = .init(elements)
@@ -66,7 +66,7 @@ func == <Value>(lhs: Term<Value>, rhs: Term<Value>) -> Bool {
 }
 
 /// Error used with `State.unify()` fails to unify.
-struct UnificationError: ErrorProtocol { }
+struct UnificationError: Error { }
 
 /// A state is a set of assocations and a counter representing the next variable.
 struct State<Value: Equatable>: CustomStringConvertible {
