@@ -33,7 +33,7 @@ indirect enum Term<Value: Equatable>: CustomStringConvertible, Equatable {
     }
     
     /// Construct a term representing a list of terms.
-    init<C: Collection where C.Iterator.Element == Term<Value>>(_ collection: C) {
+    init<C: Collection>(_ collection: C) where C.Iterator.Element == Term<Value> {
         var iterator = collection.reversed().makeIterator()
         var term = Term.empty
         while let next = iterator.next() {
@@ -173,7 +173,7 @@ func && <Value>(lhs: State<Value>.Goal, rhs: State<Value>.Goal) -> State<Value>.
 }
 
 /// Introduce a new variable that can be used to create a goal.
-func fresh<Value>(block: (Variable) -> State<Value>.Goal) -> State<Value>.Goal {
+func fresh<Value>(block: @escaping (Variable) -> State<Value>.Goal) -> State<Value>.Goal {
     return { state in
         var state = state
         let variable = Variable(index: state.counter)
@@ -183,12 +183,12 @@ func fresh<Value>(block: (Variable) -> State<Value>.Goal) -> State<Value>.Goal {
 }
 
 /// Introduce two new variables that can be used to create a goal.
-func fresh<Value>(block: (Variable, Variable) -> State<Value>.Goal) -> State<Value>.Goal {
+func fresh<Value>(block: @escaping (Variable, Variable) -> State<Value>.Goal) -> State<Value>.Goal {
     return fresh { x in fresh { y in { state in block(x, y)(state) } } }
 }
 
 /// Introduce three new variables that can be used to create a goal.
-func fresh<Value>(block: (Variable, Variable, Variable) -> State<Value>.Goal) -> State<Value>.Goal {
+func fresh<Value>(block: @escaping (Variable, Variable, Variable) -> State<Value>.Goal) -> State<Value>.Goal {
     return fresh { x in fresh { y in fresh { z in { state in block(x, y, z)(state) } } } }
 }
 

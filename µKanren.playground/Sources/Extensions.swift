@@ -7,7 +7,7 @@ extension AnyIterator {
 }
 
 extension IteratorProtocol {
-    public func flatMap(_ transform: (Element) -> AnyIterator<Element>) -> AnyIterator<Element> {
+    public func flatMap(_ transform: @escaping (Element) -> AnyIterator<Element>) -> AnyIterator<Element> {
         var outer = self
         var inner = outer.next().map(transform)
         return AnyIterator {
@@ -21,7 +21,7 @@ extension IteratorProtocol {
         }
     }
     
-    public func interleave<I: IteratorProtocol where I.Element == Element>(with iterator: I) -> AnyIterator<Element> {
+    public func interleave<I: IteratorProtocol>(with iterator: I) -> AnyIterator<Element> where I.Element == Element {
         var iterators = [ AnyIterator(self), AnyIterator(iterator) ]
         return AnyIterator {
             while let i = iterators.first {
