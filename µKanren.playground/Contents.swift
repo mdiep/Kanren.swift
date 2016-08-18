@@ -139,8 +139,10 @@ struct State<Value: Equatable>: CustomStringConvertible {
     }
 }
 
+infix operator ≡ : ComparisonPrecedence
+
 /// A new goal that tries to make two terms equal.
-func == <Value>(lhs: Term<Value>, rhs: Term<Value>) -> State<Value>.Goal {
+func ≡ <Value>(lhs: Term<Value>, rhs: Term<Value>) -> State<Value>.Goal {
     return { state in
         do {
             return AnyIterator(values: [ try state.unify(lhs, rhs) ])
@@ -151,13 +153,13 @@ func == <Value>(lhs: Term<Value>, rhs: Term<Value>) -> State<Value>.Goal {
 }
 
 /// Overload to make comparing variables easier.
-func == <Value>(lhs: Variable, rhs: Variable) -> State<Value>.Goal {
-    return .variable(lhs) == .variable(rhs)
+func ≡ <Value>(lhs: Variable, rhs: Variable) -> State<Value>.Goal {
+    return .variable(lhs) ≡ .variable(rhs)
 }
 
 /// Overload to make comparing a variable and a value easier.
-func == <Value>(lhs: Variable, rhs: Value) -> State<Value>.Goal {
-    return .variable(lhs) == .value(rhs)
+func ≡ <Value>(lhs: Variable, rhs: Value) -> State<Value>.Goal {
+    return .variable(lhs) ≡ .value(rhs)
 }
 
 /// `disj` in µKanren
@@ -197,7 +199,7 @@ func fresh<Value>(block: @escaping (Variable, Variable, Variable) -> State<Value
 // A goal that demonstrates some basic logic.
 
 let goal1 = fresh { a, b in
-    a == 7 && (a == b || b == 6)
+    a ≡ 7 && (a ≡ b || b ≡ 6)
 }
 let iter1 = goal1(State())
 iter1.next()
@@ -209,7 +211,7 @@ iter1.next()
 // A goal that demonstrates that items in lists can be compared.
 
 let goal2 = fresh { x, y, z in
-    [.variable(x), .value(4), .variable(z)] == [.value(1), .variable(y), .value(3)]
+    [.variable(x), .value(4), .variable(z)] ≡ [.value(1), .variable(y), .value(3)]
 }
 let iter2 = goal2(State())
 iter2.next()
@@ -219,10 +221,10 @@ iter2.next()
 
 /// A goal that tries to combine two lists to equal a third list.
 func append<Value>(_ head: Term<Value>, _ tail: Term<Value>, _ list: Term<Value>) -> State<Value>.Goal {
-    return (head == .empty && tail == list)
+    return (head ≡ .empty && tail ≡ list)
         || fresh { first, restOfHead, restOfList in
-            return head == .pair(.variable(first), .variable(restOfHead))
-                && list == .pair(.variable(first), .variable(restOfList))
+            return head ≡ .pair(.variable(first), .variable(restOfHead))
+                && list ≡ .pair(.variable(first), .variable(restOfList))
                 && append(.variable(restOfHead), tail, .variable(restOfList))
     }
 }
