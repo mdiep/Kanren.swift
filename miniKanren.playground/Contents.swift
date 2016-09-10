@@ -223,7 +223,7 @@ func ≡ <Value>(lhs: Value, rhs: Variable) -> State<Value>.Goal {
 }
 
 /// A goal that succeeds when both goals succeed.
-func && <Value>(lhs: State<Value>.Goal, rhs: State<Value>.Goal) -> State<Value>.Goal {
+func && <Value>(lhs: @escaping State<Value>.Goal, rhs: @escaping State<Value>.Goal) -> State<Value>.Goal {
     return { state in lhs(state).flatMap(rhs) }
 }
 
